@@ -77,6 +77,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		System.setProperty("http.keepAlive", "true");
 		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 		
 		String start_url = "https://ibank.belinvestbank.by";
@@ -93,12 +94,10 @@ public class Main {
 			HEADERS.put("Cookie", con.getHeaderFields().get("Set-Cookie").get(0).split(";")[0]);
 			
 			url = new URL(signin_url);
+			con = (HttpsURLConnection) url.openConnection();
 			setHeaders(con, SIGNIN_GET_HEADERS);
-			System.out.println(con.getRequestProperties());
 			System.out.println(con.getHeaderFields());
-			printResponse(con);
-			System.exit(0);
-//			saveCaptcha(con);
+			saveCaptcha(con);
 			
 			byte[] b = new byte[100];
 			System.in.read(b);
@@ -142,7 +141,6 @@ public class Main {
 				response.append(inputLine);
 			}
 			in.close();
-			System.out.println(response);
 			Pattern MY_PATTERN = Pattern.compile("/captcha/\\?v=(\\d+)");
 			Matcher m = MY_PATTERN.matcher(response.toString());
 			if (m.find()) {
