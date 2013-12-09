@@ -9,9 +9,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,19 +37,22 @@ public class Main {
 		HEADERS.put("User-Agent", "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36");
 		HEADERS.put("Content-Type", "application/x-www-form-urlencoded");
 		HEADERS.put("Origin", "https://ibank.belinvestbank.by");
-		HEADERS.put("Referer", "https://ibank.belinvestbank.by/signin");
-		HEADERS.put("", "");
+		HEADERS.put("Referer", "https://ibank.belinvestbank.by/");
+		HEADERS.put("Cookie", "PHPSESSID=a9rh69ogpdsjupae8c9q61mafooem95v");
 
 		START_HEADERS.add("Accept");
 		START_HEADERS.add("Accept-Encoding");
 		START_HEADERS.add("Accept-Language");
+		START_HEADERS.add("Cache-Control");
 		START_HEADERS.add("Connection");
+		START_HEADERS.add("Cookie");
 		START_HEADERS.add("Host");
 		START_HEADERS.add("User-Agent");
 		
 		SIGNIN_GET_HEADERS.add("Accept");
 		SIGNIN_GET_HEADERS.add("Accept-Encoding");
 		SIGNIN_GET_HEADERS.add("Accept-Language");
+		SIGNIN_GET_HEADERS.add("Cache-Control");
 		SIGNIN_GET_HEADERS.add("Connection");
 		SIGNIN_GET_HEADERS.add("Cookie");
 		SIGNIN_GET_HEADERS.add("Host");
@@ -89,14 +95,17 @@ public class Main {
 			con.setInstanceFollowRedirects(false);
 			con.setRequestMethod("GET");
 			setHeaders(con, START_HEADERS);
-			System.out.println(con.getHeaderFields());
+			printRequestHeaders(con);
+			printResponsetHeaders(con);
 
-			HEADERS.put("Cookie", con.getHeaderFields().get("Set-Cookie").get(0).split(";")[0]);
+//			HEADERS.put("Cookie", con.getHeaderFields().get("Set-Cookie").get(0).split(";")[0]);
+			HEADERS.put("Referer", "https://ibank.belinvestbank.by/signin");
 			
 			url = new URL(signin_url);
 			con = (HttpsURLConnection) url.openConnection();
 			setHeaders(con, SIGNIN_GET_HEADERS);
-			System.out.println(con.getHeaderFields());
+			printRequestHeaders(con);
+			printResponsetHeaders(con);
 			saveCaptcha(con);
 			
 			byte[] b = new byte[100];
@@ -110,17 +119,19 @@ public class Main {
 			StringBuilder urlParameters = new StringBuilder("login=3220389H030PB&keyword=z0q1ec&keystring=");
 			urlParameters.append(captcha);
 			String paramsLength = Integer.toString(urlParameters.length());
+			System.out.println(urlParameters);
 			con.setRequestProperty("Content-Length", paramsLength);
+			printRequestHeaders(con);
+			con.setAllowUserInteraction(false);
+			HttpsURLConnection.setFollowRedirects(false);
+			con.setInstanceFollowRedirects(false);
+			con.setUseCaches(false);
 			con.setDoOutput(true);
+			con.setDoInput(true);
 			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 			wr.writeBytes(urlParameters.toString());
-			wr.flush();
 			wr.close();
-			
-			System.out.println(con.getResponseCode());
-			System.out.println(con.getResponseMessage());
-			System.out.println(con.getHeaderFields());
-			printResponse(con);
+			printResponsetHeaders(con);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -130,6 +141,38 @@ public class Main {
 		for (String header : headers) {
 			con.setRequestProperty(header, HEADERS.get(header));
 		}
+	}
+	
+	public static void printRequestHeaders(HttpsURLConnection con) {
+		System.out.println(con.getRequestMethod() + " " + con.getURL());
+		System.out.println("-----Request headers-----");
+		Set<String> headerNames = con.getRequestProperties().keySet();
+		String[] sortedHeaderNames = new String[headerNames.size()];
+		headerNames.toArray(sortedHeaderNames);
+		Arrays.sort(sortedHeaderNames);
+		for (String header : sortedHeaderNames) {
+			System.out.println(header + " : " + con.getRequestProperty(header));
+		}
+		System.out.println();
+	}
+	
+	public static void printResponsetHeaders(HttpsURLConnection con) throws IOException {
+		System.out.println(con.getResponseMessage() + " " + con.getResponseCode());
+		System.out.println("-----Response headers-----");
+		Set<String> headerNamesWithNull = con.getHeaderFields().keySet();
+		Set<String> headerNames = new HashSet<String>();
+		for (String header : headerNamesWithNull) {
+			if (header != null) {
+				headerNames.add(header);
+			}
+		}
+		String[] sortedHeaderNames = new String[headerNames.size()];
+		headerNames.toArray(sortedHeaderNames);
+		Arrays.sort(sortedHeaderNames);
+		for (String header : sortedHeaderNames) {
+			System.out.println(header + " : " + con.getHeaderField(header));
+		}
+		System.out.println();
 	}
 
 	public static void saveCaptcha(HttpsURLConnection con) {
@@ -150,7 +193,8 @@ public class Main {
 				con = (HttpsURLConnection) url.openConnection();
 				setHeaders(con, CAPTCHA_HEADERS);
 				con.setRequestProperty("Accept", "image/webp,*/*;q=0.8");
-				System.out.println(con.getHeaderFields());
+				printRequestHeaders(con);
+				printResponsetHeaders(con);
 				InputStream is = url.openStream();
 				OutputStream os = new FileOutputStream("captcha.jpg");
 
