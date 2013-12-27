@@ -14,7 +14,9 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class SeleniumBalance {
 
@@ -24,8 +26,10 @@ public class SeleniumBalance {
 	 */
 	public static void main(String[] args) {
 		System.setProperty("webdriver.chrome.driver", "/opt/chromedriver_selenium/chromedriver");
-		WebDriver browser = new ChromeDriver();
+		System.setProperty("phantomjs.binary.path", "/opt/phantomjs-1.9.2-linux-i686/bin/phantomjs");
+		WebDriver browser = new PhantomJSDriver();
 		browser.get("https://ibank.belinvestbank.by/signin");
+		new WebDriverWait(browser, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("captcha")));
 		WebElement captchaElement = browser.findElement(By.id("captcha"));
 		System.out.println(captchaElement.getLocation());
 		TakesScreenshot takesScreenshot = (TakesScreenshot) browser;
@@ -44,8 +48,10 @@ public class SeleniumBalance {
 			String captcha = new String(b).trim();
 			javascriptExecutor.executeScript(new StringBuilder("document.getElementById('keystr_id').value = '").append(captcha).append("'").toString());
 			javascriptExecutor.executeScript("document.getElementById('login_submit').click()");
+			new WebDriverWait(browser, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("pass")));
 			javascriptExecutor.executeScript("document.getElementById('pass').value = 'yK9m23sd'");
 			javascriptExecutor.executeScript("document.getElementById('password_submit').click()");
+			new WebDriverWait(browser, 10).until(ExpectedConditions.presenceOfElementLocated(By.className("current-card-block")));
 			WebElement div = browser.findElement(By.className("current-card-block"));
 			System.out.println(div.getText());
 		} catch (WebDriverException e) {
@@ -54,6 +60,7 @@ public class SeleniumBalance {
 			e.printStackTrace();
 		}
 		browser.close();
+		browser.quit();
 	}
 
 }
