@@ -54,23 +54,12 @@ public class Main {
 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
 			messageDigest = MessageDigest.getInstance("MD5");
 			Statement statement = connection.createStatement();
-			PreparedStatement preparedStatement = connection.prepareStatement("update photo set camcorder_id = ? where id = ?");
-			Map<String, Integer> camcorders = new HashMap<String, Integer>();
-			ResultSet resultSet = statement.executeQuery("select id, name from camcorder");
-			while (resultSet.next()) {
-				camcorders.put(resultSet.getString(2), resultSet.getInt(1));
-			}
-			resultSet = statement.executeQuery("select path, id from photo");
+			ResultSet resultSet = statement.executeQuery("select path, id from photo");
 			while (resultSet.next()) {
 				String path = resultSet.getString(1);
 				String id = resultSet.getString(2);
 				fileHashes.put(path, id);
-				String[] tokens = path.split(File.separator);
-				preparedStatement.setInt(1, camcorders.get(tokens[tokens.length - 2]));
-				preparedStatement.setString(2, id);
-				preparedStatement.executeUpdate();
 			}
-			System.out.println("complete");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -97,30 +86,43 @@ public class Main {
 	}
 
 	public static void compareAllPhotos(File rootDir) {
-		Set<Double> diffs = new HashSet<Double>();
-		File[] photoDirs = rootDir.listFiles(dirFilter);
-		for (int i = 0; i < photoDirs.length; i++) {
-			File[] photos = photoDirs[i].listFiles(jpegFilter);
-			count = 0;
-			double pairsCount = CombinatoricsUtils.binomialCoefficient(photos.length, 2);
-			System.out.println(photoDirs[i].getName() + " --- " + pairsCount);
-			double time = 0;
-			for (int j = 0; j < photos.length; j++) {
-				for (int k = j + 1; k < photos.length; k++) {
-					long startTime = System.nanoTime();
-					double d = comparePhotos(photos[j], photos[k]);
-					long endTime = System.nanoTime();
-					double duration = (endTime - startTime);
-					duration /= 1000000000;
-					count++;
-					time += duration;
-					double est = (pairsCount / count - 1) * time / 3600.0;
-					System.out.println(est);
-					diffs.add(d);
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery("select count(*) as pairs, camcorder_id from photo group by camcorder_id order by pairs desc");
+			while (resultSet.next()) {
+				int files = resultSet.getInt(1);
+				if (files >= 2) {
+					long pairs = CombinatoricsUtils.binomialCoefficient(files, 2);
+					System.out.println(pairs + " " + resultSet.getString(2));
 				}
 			}
-			System.out.println(diffs);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+//		Set<Double> diffs = new HashSet<Double>();
+//		File[] photoDirs = rootDir.listFiles(dirFilter);
+//		for (int i = 0; i < photoDirs.length; i++) {
+//			File[] photos = photoDirs[i].listFiles(jpegFilter);
+//			count = 0;
+//			double pairsCount = CombinatoricsUtils.binomialCoefficient(photos.length, 2);
+//			System.out.println(photoDirs[i].getName() + " --- " + pairsCount);
+//			double time = 0;
+//			for (int j = 0; j < photos.length; j++) {
+//				for (int k = j + 1; k < photos.length; k++) {
+//					long startTime = System.nanoTime();
+//					double d = comparePhotos(photos[j], photos[k]);
+//					long endTime = System.nanoTime();
+//					double duration = (endTime - startTime);
+//					duration /= 1000000000;
+//					count++;
+//					time += duration;
+//					double est = (pairsCount / count - 1) * time / 3600.0;
+//					System.out.println(est);
+//					diffs.add(d);
+//				}
+//			}
+//			System.out.println(diffs);
+//		}
 	}
 
 	public static double comparePhotos(File photo1, File photo2) {
@@ -241,6 +243,31 @@ public class Main {
 					count++;
 				}
 			}
+		}
+	}
+
+	public static void setCamcorderIds() {
+		try {
+			Statement statement = connection.createStatement();
+			PreparedStatement preparedStatement = connection.prepareStatement("update photo set camcorder_id = ? where id = ?");
+			Map<String, Integer> camcorders = new HashMap<String, Integer>();
+			ResultSet resultSet = statement.executeQuery("select id, name from camcorder");
+			while (resultSet.next()) {
+				camcorders.put(resultSet.getString(2), resultSet.getInt(1));
+			}
+			resultSet = statement.executeQuery("select path, id from photo");
+			while (resultSet.next()) {
+				String path = resultSet.getString(1);
+				String id = resultSet.getString(2);
+				fileHashes.put(path, id);
+				String[] tokens = path.split(File.separator);
+				preparedStatement.setInt(1, camcorders.get(tokens[tokens.length - 2]));
+				preparedStatement.setString(2, id);
+				preparedStatement.executeUpdate();
+			}
+			System.out.println("complete");
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
