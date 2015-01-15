@@ -13,8 +13,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -71,7 +74,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		File rootDir = new File("/home/anton/Pictures/Photo_collection");
-		compareAllPhotos(rootDir);
+		addPairs(rootDir);
 	}
 
 	public static void calcPhotos(File rootDir) {
@@ -85,44 +88,89 @@ public class Main {
 		System.out.println(count);
 	}
 
-	public static void compareAllPhotos(File rootDir) {
+	public static void addPairs(File rootDir) {
 		try {
 			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery("select count(*) as pairs, camcorder_id from photo group by camcorder_id order by pairs desc");
+			PreparedStatement updateStatement = connection.prepareStatement("insert into pair (first, second) values (?, ?)");
+			ResultSet resultSet = statement.executeQuery("select count(*) as pairs, camcorder_id from photo group by camcorder_id having camcorder_id order by pairs");
+			double total_speed = 0;
+			int counter = 0;
+			count = 0;
+			int totalPairs = 15713532;
+			String notIn = " (";
 			while (resultSet.next()) {
 				int files = resultSet.getInt(1);
 				if (files >= 2) {
+					int camcorder = resultSet.getInt(2);
+					long startTime = System.nanoTime();
 					long pairs = CombinatoricsUtils.binomialCoefficient(files, 2);
-					System.out.println(pairs + " " + resultSet.getString(2));
+					count += pairs;
+					double avg_speed = total_speed / counter;
+					int estimateTime = (int) (pairs / avg_speed);
+					Date estDate = new Date();
+					estDate.setTime(estDate.getTime() + (long)((pairs / avg_speed) * 1000));
+					Date finishDate = new Date();
+					finishDate.setTime(finishDate.getTime() + (long)((totalPairs / avg_speed) * 1000));
+					System.out.println(String.format("Estimated time:\t\t%d\tseconds\t\tTill: %s\tFinish: %s", estimateTime, estDate.toString(), finishDate.toString()));
+					statement = connection.createStatement();
+					ResultSet filesResultSet = statement.executeQuery("select id from photo where camcorder_id = " + camcorder);
+					List<String> ids = new ArrayList<String>();
+					while (filesResultSet.next()) {
+						ids.add(filesResultSet.getString(1));
+					}
+					int batch_counter = 0;
+					final int batch_limit = 1000000;
+					for (int i = 0; i < ids.size(); i++) {
+						for (int j = i + 1; j < ids.size(); j++) {
+							updateStatement.setString(1, ids.get(i));
+							updateStatement.setString(2, ids.get(j));
+							updateStatement.addBatch();
+							batch_counter++;
+							if (batch_counter > batch_limit) {
+								updateStatement.executeBatch();
+								batch_counter = 0;
+							}
+						}
+					}
+					updateStatement.executeBatch();
+					totalPairs -= pairs;
+					double duration = (System.nanoTime() - startTime) / 1000000000.0;
+					total_speed += (pairs / duration);
+					counter++;
+					notIn += camcorder + ", ";
+					System.out.println(String.format("%d\t\t%d\t%.2f\tseconds\t\t%.2f pairs per second\ttotal pairs: %d\tinserted camcorders:%s", pairs, camcorder, duration, (pairs / duration), count, notIn));
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-//		Set<Double> diffs = new HashSet<Double>();
-//		File[] photoDirs = rootDir.listFiles(dirFilter);
-//		for (int i = 0; i < photoDirs.length; i++) {
-//			File[] photos = photoDirs[i].listFiles(jpegFilter);
-//			count = 0;
-//			double pairsCount = CombinatoricsUtils.binomialCoefficient(photos.length, 2);
-//			System.out.println(photoDirs[i].getName() + " --- " + pairsCount);
-//			double time = 0;
-//			for (int j = 0; j < photos.length; j++) {
-//				for (int k = j + 1; k < photos.length; k++) {
-//					long startTime = System.nanoTime();
-//					double d = comparePhotos(photos[j], photos[k]);
-//					long endTime = System.nanoTime();
-//					double duration = (endTime - startTime);
-//					duration /= 1000000000;
-//					count++;
-//					time += duration;
-//					double est = (pairsCount / count - 1) * time / 3600.0;
-//					System.out.println(est);
-//					diffs.add(d);
-//				}
-//			}
-//			System.out.println(diffs);
-//		}
+	}
+	
+	public static void compareAllPhotos(File rootDir) {
+		// Set<Double> diffs = new HashSet<Double>();
+		// File[] photoDirs = rootDir.listFiles(dirFilter);
+		// for (int i = 0; i < photoDirs.length; i++) {
+		// File[] photos = photoDirs[i].listFiles(jpegFilter);
+		// count = 0;
+		// double pairsCount = CombinatoricsUtils.binomialCoefficient(photos.length, 2);
+		// System.out.println(photoDirs[i].getName() + " --- " + pairsCount);
+		// double time = 0;
+		// for (int j = 0; j < photos.length; j++) {
+		// for (int k = j + 1; k < photos.length; k++) {
+		// long startTime = System.nanoTime();
+		// double d = comparePhotos(photos[j], photos[k]);
+		// long endTime = System.nanoTime();
+		// double duration = (endTime - startTime);
+		// duration /= 1000000000;
+		// count++;
+		// time += duration;
+		// double est = (pairsCount / count - 1) * time / 3600.0;
+		// System.out.println(est);
+		// diffs.add(d);
+		// }
+		// }
+		// System.out.println(diffs);
+		// }
 	}
 
 	public static double comparePhotos(File photo1, File photo2) {
