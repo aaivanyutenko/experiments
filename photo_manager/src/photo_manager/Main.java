@@ -73,8 +73,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		File rootDir = new File("/home/anton/Pictures/Photo_collection");
-		compareAllPhotos(rootDir);
+		 File rootDir = new File("/home/anton/Pictures/Photo_collection");
+		 compareAllPhotos(rootDir);
 	}
 
 	public static void calcPhotos(File rootDir) {
@@ -108,22 +108,22 @@ public class Main {
 					double avg_speed = total_speed / counter;
 					int estimateTime = (int) (pairs / avg_speed);
 					Date estDate = new Date();
-					estDate.setTime(estDate.getTime() + (long)((pairs / avg_speed) * 1000));
+					estDate.setTime(estDate.getTime() + (long) ((pairs / avg_speed) * 1000));
 					Date finishDate = new Date();
-					finishDate.setTime(finishDate.getTime() + (long)((totalPairs / avg_speed) * 1000));
-					System.out.println(String.format("Estimated time:\t\t%d\tseconds\t\tTill: %s\tFinish: %s", estimateTime, estDate.toString(), finishDate.toString()));
+					finishDate.setTime(finishDate.getTime() + (long) ((totalPairs / avg_speed) * 1000));
+					System.out.println(String.format("Estimated time for %d pairs:\t\t%d\tseconds\t\tTill: %s\tFinish: %s", pairs, estimateTime, estDate.toString(), finishDate.toString()));
 					statement = connection.createStatement();
 					ResultSet filesResultSet = statement.executeQuery("select id from photo where camcorder_id = " + camcorder);
-					List<String> ids = new ArrayList<String>();
+					List<Integer> ids = new ArrayList<Integer>();
 					while (filesResultSet.next()) {
-						ids.add(filesResultSet.getString(1));
+						ids.add(filesResultSet.getInt(1));
 					}
 					int batch_counter = 0;
 					final int batch_limit = 1000000;
 					for (int i = 0; i < ids.size(); i++) {
 						for (int j = i + 1; j < ids.size(); j++) {
-							updateStatement.setString(1, ids.get(i));
-							updateStatement.setString(2, ids.get(j));
+							updateStatement.setInt(1, ids.get(i));
+							updateStatement.setInt(2, ids.get(j));
 							updateStatement.addBatch();
 							batch_counter++;
 							if (batch_counter > batch_limit) {
@@ -138,14 +138,49 @@ public class Main {
 					total_speed += (pairs / duration);
 					counter++;
 					notIn += camcorder + ", ";
-					System.out.println(String.format("%d\t\t%d\t%.2f\tseconds\t\t%.2f pairs per second\ttotal pairs: %d\tinserted camcorders:%s", pairs, camcorder, duration, (pairs / duration), count, notIn));
+					System.out.println(String.format("%d\t\t%d\t\t\t%.2f\tseconds\t\t%.2f pairs per second\ttotal pairs: %d\tinserted camcorders:%s", pairs, camcorder, duration, (pairs / duration), count, notIn));
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
+	public static void databaseModification() {
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery("select id, md5 from hash");
+			Map<String, Integer> hashes = new HashMap<String, Integer>();
+			while (resultSet.next()) {
+				hashes.put(resultSet.getString(2), resultSet.getInt(1));
+			}
+			int rowCount = 15713532;
+			int limit = 1;
+			int offset = 0;
+			PreparedStatement updateStatement = connection.prepareStatement("update pair set first = ?, second = ? where first = ? and second = ?");
+			while (offset < rowCount) {
+				long startTime = System.nanoTime();
+
+				resultSet = statement.executeQuery("select first, second from pair limit " + offset + ", " + limit);
+				while (resultSet.next()) {
+					String first = resultSet.getString(1);
+					String second = resultSet.getString(2);
+					updateStatement.setInt(1, hashes.get(first));
+					updateStatement.setInt(2, hashes.get(second));
+					updateStatement.setString(3, first);
+					updateStatement.setString(4, second);
+					updateStatement.addBatch();
+				}
+				updateStatement.executeBatch();
+				offset += limit;
+				double duration = (System.nanoTime() - startTime) / 1000000000.0;
+				System.out.println(offset + ".\t" + duration + " seconds");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void compareAllPhotos(File rootDir) {
 		try {
 			Statement statement = connection.createStatement();
@@ -154,9 +189,9 @@ public class Main {
 			for (int i = 0; i < 1000000; i++) {
 				long startTime = System.nanoTime();
 				resultSet = statement.executeQuery("select first, second from pair where matches is null limit 0, 10");
-//				int counter = 0;
+				// int counter = 0;
 				while (resultSet.next()) {
-//					counter++;
+					// counter++;
 					String first = resultSet.getString(1);
 					String second = resultSet.getString(2);
 					double d = comparePhotos(fileHashes.get(first), fileHashes.get(second));
@@ -164,11 +199,11 @@ public class Main {
 					updateStatement.setString(2, first);
 					updateStatement.setString(3, second);
 					updateStatement.addBatch();
-//					if (d > 0.5) {
-//						System.out.println(String.format("%d\t%.12f\t%s %s", counter, d, fileHashes.get(first), fileHashes.get(second)));
-//					} else {
-//						System.out.println(counter + "\t" + d);
-//					}
+					// if (d > 0.5) {
+					// System.out.println(String.format("%d\t%.12f\t%s %s", counter, d, fileHashes.get(first), fileHashes.get(second)));
+					// } else {
+					// System.out.println(counter + "\t" + d);
+					// }
 				}
 				updateStatement.executeBatch();
 				double duration = (System.nanoTime() - startTime) / 1000000000.0;
@@ -290,12 +325,10 @@ public class Main {
 	public static void addCamcorders(File rootDir) {
 		try {
 			File[] photoDirs = rootDir.listFiles(dirFilter);
-			PreparedStatement statement = connection.prepareStatement("insert into camcorder (name) values (?)");
+			PreparedStatement statement = connection.
+					prepareStatement("insert into camcorder (name) values (?)");
 			for (int i = 0; i < photoDirs.length; i++) {
 				String camcorder = photoDirs[i].getName();
-				File[] photos = photoDirs[i].listFiles(jpegFilter);
-				for (int j = 0; j < photos.length; j++) {
-				}
 				statement.setString(1, camcorder);
 				try {
 					statement.executeUpdate();
