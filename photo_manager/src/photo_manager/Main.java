@@ -61,7 +61,7 @@ public class Main {
 			while (resultSet.next()) {
 				String path = resultSet.getString(1);
 				String id = resultSet.getString(2);
-				fileHashes.put(path, id);
+				fileHashes.put(id, path);
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -74,7 +74,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		File rootDir = new File("/home/anton/Pictures/Photo_collection");
-		addPairs(rootDir);
+		compareAllPhotos(rootDir);
 	}
 
 	public static void calcPhotos(File rootDir) {
@@ -147,6 +147,36 @@ public class Main {
 	}
 	
 	public static void compareAllPhotos(File rootDir) {
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = null;
+			PreparedStatement updateStatement = connection.prepareStatement("update pair set matches = ? where first = ? and second = ?");
+			for (int i = 0; i < 1000000; i++) {
+				long startTime = System.nanoTime();
+				resultSet = statement.executeQuery("select first, second from pair where matches is null limit 0, 10");
+//				int counter = 0;
+				while (resultSet.next()) {
+//					counter++;
+					String first = resultSet.getString(1);
+					String second = resultSet.getString(2);
+					double d = comparePhotos(fileHashes.get(first), fileHashes.get(second));
+					updateStatement.setDouble(1, d);
+					updateStatement.setString(2, first);
+					updateStatement.setString(3, second);
+					updateStatement.addBatch();
+//					if (d > 0.5) {
+//						System.out.println(String.format("%d\t%.12f\t%s %s", counter, d, fileHashes.get(first), fileHashes.get(second)));
+//					} else {
+//						System.out.println(counter + "\t" + d);
+//					}
+				}
+				updateStatement.executeBatch();
+				double duration = (System.nanoTime() - startTime) / 1000000000.0;
+				System.out.println(i + ".\t" + duration + " seconds");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		// Set<Double> diffs = new HashSet<Double>();
 		// File[] photoDirs = rootDir.listFiles(dirFilter);
 		// for (int i = 0; i < photoDirs.length; i++) {
@@ -173,12 +203,12 @@ public class Main {
 		// }
 	}
 
-	public static double comparePhotos(File photo1, File photo2) {
+	public static double comparePhotos(String photo1, String photo2) {
 		BufferedImage img1 = null;
 		BufferedImage img2 = null;
 		try {
-			img1 = ImageIO.read(photo1);
-			img2 = ImageIO.read(photo2);
+			img1 = ImageIO.read(new File(photo1));
+			img2 = ImageIO.read(new File(photo2));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -207,7 +237,7 @@ public class Main {
 		}
 		double n = width1 * height1 * 3;
 		double p = diff / n / 255.0;
-		return p * 100.0;
+		return p;
 	}
 
 	public static void addPhotos(File rootDir) {
