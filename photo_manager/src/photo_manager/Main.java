@@ -25,6 +25,11 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 public class Main {
@@ -73,8 +78,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		 File rootDir = new File("/home/anton/Pictures/Photo_collection");
-		 compareAllPhotos(rootDir);
+//		 File rootDir = new File("/home/anton/Pictures/Photo_collection");
+		 readExif();
 	}
 
 	public static void calcPhotos(File rootDir) {
@@ -86,6 +91,36 @@ public class Main {
 			count += photos.length;
 		}
 		System.out.println(count);
+	}
+	
+	public static void readExif() {
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery("select id, path from photo");
+			while (resultSet.next()) {
+				String path = resultSet.getString(2);
+				try {
+					Metadata imageMetadata = ImageMetadataReader.readMetadata(new File(path));
+					for (Directory directory : imageMetadata.getDirectories()) {
+						System.out.println(directory);
+						for(Tag tag : directory.getTags()) {
+							System.out.println("\t" + tag);
+							System.out.println("\t\tDescription:\t" + tag.getDescription());
+							System.out.println("\t\tTagName:\t" + tag.getTagName());
+							System.out.println("\t\tTagType:\t" + tag.getTagType());
+							System.out.println("\t\tTagTypeHex:\t" + tag.getTagTypeHex());
+						}
+					}
+				} catch (ImageProcessingException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void addPairs(File rootDir) {
