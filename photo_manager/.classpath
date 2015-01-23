@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="commons-math3-3.4.1.jar"/>
 	<classpathentry kind="lib" path="metadata-extractor-2.7.0.jar"/>
 	<classpathentry kind="lib" path="xmpcore-5.1.2.jar"/>
+	<classpathentry kind="lib" path="json-20141113.jar"/>
+	<classpathentry kind="lib" path="commons-compress-1.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

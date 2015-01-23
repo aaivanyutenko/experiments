@@ -4,7 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -14,16 +18,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.math3.util.CombinatoricsUtils;
+import org.json.JSONObject;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -79,7 +88,7 @@ public class Main {
 
 	public static void main(String[] args) {
 //		 File rootDir = new File("/home/anton/Pictures/Photo_collection");
-		 readExif();
+		processExif();
 	}
 
 	public static void calcPhotos(File rootDir) {
@@ -96,33 +105,65 @@ public class Main {
 	public static void readExif() {
 		try {
 			Statement statement = connection.createStatement();
+			PreparedStatement preparedStatement = connection.prepareStatement("update photo set metadata = ? where id = ?");
 			ResultSet resultSet = statement.executeQuery("select id, path from photo");
 			while (resultSet.next()) {
 				String path = resultSet.getString(2);
 				try {
 					Metadata imageMetadata = ImageMetadataReader.readMetadata(new File(path));
+					JSONObject jsonMetadata = new JSONObject();
 					for (Directory directory : imageMetadata.getDirectories()) {
-						System.out.println(directory);
+						JSONObject jsonTags = new JSONObject();
 						for(Tag tag : directory.getTags()) {
-							System.out.println("\t" + tag);
-							System.out.println("\t\tDescription:\t" + tag.getDescription());
-							System.out.println("\t\tTagName:\t" + tag.getTagName());
-							System.out.println("\t\tTagType:\t" + tag.getTagType());
-							System.out.println("\t\tTagTypeHex:\t" + tag.getTagTypeHex());
+							jsonTags.put(tag.getTagName(), tag.getDescription());
 						}
+						jsonMetadata.put(directory.getName(), jsonTags);
 					}
+					preparedStatement.setString(1, jsonMetadata.toString());
+					int id = resultSet.getInt(1);
+					preparedStatement.setInt(2, id);
+					preparedStatement.addBatch();
+					System.out.println(id);
 				} catch (ImageProcessingException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				break;
 			}
+			preparedStatement.executeBatch();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public static void processExif() {
+		try {
+			SevenZFile allPhotosFile = new SevenZFile(new File("metadata" + File.separator + "all_photos_metadata.7z"));
+			SevenZArchiveEntry entry = allPhotosFile.getNextEntry();
+			byte[] b = new byte[(int) entry.getSize()];
+			allPhotosFile.read(b, 0, b.length);
+			Set<String> tagNames = new HashSet<String>();
+			JSONObject allPhotos = new JSONObject(new String(b));
+			for (String id : allPhotos.keySet()) {
+				JSONObject jsonMetadata = allPhotos.getJSONObject(id);
+				for (String directory : jsonMetadata.keySet()) {
+					JSONObject jsonTags = jsonMetadata.getJSONObject(directory);
+					tagNames.addAll(jsonTags.keySet());
+				}
+			}
+			List<String> sortedNames = new ArrayList<String>(tagNames);
+			Collections.sort(sortedNames);
+			for (String name : sortedNames) {
+				System.out.println(name);
+			}
+			allPhotosFile.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void addPairs(File rootDir) {
 		try {
 			Statement statement = connection.createStatement();
@@ -247,30 +288,6 @@ public class Main {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		// Set<Double> diffs = new HashSet<Double>();
-		// File[] photoDirs = rootDir.listFiles(dirFilter);
-		// for (int i = 0; i < photoDirs.length; i++) {
-		// File[] photos = photoDirs[i].listFiles(jpegFilter);
-		// count = 0;
-		// double pairsCount = CombinatoricsUtils.binomialCoefficient(photos.length, 2);
-		// System.out.println(photoDirs[i].getName() + " --- " + pairsCount);
-		// double time = 0;
-		// for (int j = 0; j < photos.length; j++) {
-		// for (int k = j + 1; k < photos.length; k++) {
-		// long startTime = System.nanoTime();
-		// double d = comparePhotos(photos[j], photos[k]);
-		// long endTime = System.nanoTime();
-		// double duration = (endTime - startTime);
-		// duration /= 1000000000;
-		// count++;
-		// time += duration;
-		// double est = (pairsCount / count - 1) * time / 3600.0;
-		// System.out.println(est);
-		// diffs.add(d);
-		// }
-		// }
-		// System.out.println(diffs);
-		// }
 	}
 
 	public static double comparePhotos(String photo1, String photo2) {
