@@ -1,11 +1,13 @@
 package photo_manager;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -15,7 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -133,23 +134,28 @@ public class Main {
 	
 	public static void processExif() {
 		try {
+			FileInputStream tagNamesFile = new FileInputStream(new File("metadata" + File.separator + "all_tag_names"));
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(tagNamesFile));
+			List<String> tagNames = new ArrayList<String>();
+			String line = bufferedReader.readLine();
+			while (line != null) {
+				tagNames.add(line);
+				line = bufferedReader.readLine();
+			}
+			bufferedReader.close();
+			tagNamesFile.close();
+			System.exit(0);
 			SevenZFile allPhotosFile = new SevenZFile(new File("metadata" + File.separator + "all_photos_metadata.7z"));
 			SevenZArchiveEntry entry = allPhotosFile.getNextEntry();
 			byte[] b = new byte[(int) entry.getSize()];
 			allPhotosFile.read(b, 0, b.length);
-			Set<String> tagNames = new HashSet<String>();
 			JSONObject allPhotos = new JSONObject(new String(b));
 			for (String id : allPhotos.keySet()) {
 				JSONObject jsonMetadata = allPhotos.getJSONObject(id);
 				for (String directory : jsonMetadata.keySet()) {
 					JSONObject jsonTags = jsonMetadata.getJSONObject(directory);
-					tagNames.addAll(jsonTags.keySet());
+					System.out.println(jsonTags);
 				}
-			}
-			List<String> sortedNames = new ArrayList<String>(tagNames);
-			Collections.sort(sortedNames);
-			for (String name : sortedNames) {
-				System.out.println(name);
 			}
 			allPhotosFile.close();
 		} catch (FileNotFoundException e) {

@@ -1,0 +1,521 @@
+AE Bracket Compensation
+AEB Bracket Value
+AF Area Height
+AF Area Width
+AF Area X Positions
+AF Area Y Positions
+AF Focus Position
+AF Illuminator
+AF Image Height
+AF Image Width
+AF Info 2
+AF Info Array 2
+AF Mode
+AF Point Count
+AF Point Selected
+AF Points in Focus
+AF Points in Focus Count
+AF Tune
+AF Type
+Active D-Lighting
+Anti Blur
+Aperture Value
+Application Record Version
+Auto Exposure Bracketing
+Auto Flash Compensation
+Auto Flash Mode
+Auto ISO
+Auto Rotate
+BW Mode
+Background Color
+Base ISO
+Black Level
+Blue Bias
+Blue Colorant
+Blue TRC
+Body Serial Number
+Bracket
+Brightness Value
+Bulb Duration
+CFA Pattern
+CMM Type
+Camera Id
+Camera Info Array
+Camera Serial Number
+Camera Temperature
+Camera Type
+Canon Model ID
+Caption Digest
+Caption/Abstract
+Categories
+Class
+Coded Character Set
+Color Balance
+Color Halftoning Information
+Color Mode
+Color Mode Setting
+Color Space
+Color Transfer Functions
+Color Transform
+Color space
+Colour Control
+Colour Matrix
+Component 1
+Component 2
+Component 3
+Components Configuration
+Compressed Bits Per Pixel
+Compression Type
+Continuous Drive Mode
+Contrast
+Contrast Curve
+Control Mode
+Copyright
+Copyright Notice
+Coring Filter
+Crop High Speed
+Custom Rendered
+DCT Encode Version
+Data Dump
+Data Precision
+Date Created
+Date Stamp Mode
+Date/Time
+Date/Time Digitized
+Date/Time Original
+Device Mfg Description
+Device Model Description
+Device manufacturer
+Device model
+DigiZoom Ratio
+Digital Date Created
+Digital Time Created
+Digital Vari Program
+Digital Zoom
+Digital Zoom Ratio
+Easy Shooting Mode
+Exif Image Height
+Exif Image Width
+Exif Version
+Exposure Bias Value
+Exposure Compensation
+Exposure Difference
+Exposure Index
+Exposure Mode
+Exposure Program
+Exposure Sequence Number
+Exposure Time
+Exposure Tuning
+F Number
+F-Number
+Face Detect Array 1
+Face Detect Array 2
+File Info
+File Source
+Final Height
+Final Width
+Firmware
+Firmware Revision
+Firmware Version
+Flags 0
+Flags 1
+Flash
+Flash Activity
+Flash Bias
+Flash Bracket Compensation
+Flash Details
+Flash Exposure Compensation
+Flash Guide Number
+Flash Info
+Flash Level
+Flash Mode
+Flash Output
+Flash Sync Mode
+Flash Used
+FlashPix Version
+Focal Length
+Focal Length 35
+Focal Plane Diagonal
+Focal Plane Resolution Unit
+Focal Plane X Resolution
+Focal Plane Y Resolution
+Focal Units per mm
+Focus Distance
+Focus Distance Lower
+Focus Distance Upper
+Focus Mode
+Focus Range
+Focus Type
+GPS Altitude
+GPS Altitude Ref
+GPS Date Stamp
+GPS Img Direction
+GPS Img Direction Ref
+GPS Latitude
+GPS Latitude Ref
+GPS Longitude
+GPS Longitude Ref
+GPS Processing Method
+GPS Time-Stamp
+GPS Version ID
+Gain Control
+Global Altitude
+Global Angle
+Green Colorant
+Green TRC
+Grid and Guides Information
+High ISO Noise Reduction
+IPTC-NAA Record
+ISO
+ISO Info
+ISO Mode
+ISO Sensitivity
+ISO Speed Ratings
+ISO Value
+Image Adjustment
+Image Authentication
+Image Boundary
+Image Data Size
+Image Description
+Image Height
+Image Number
+Image Size
+Image Stabilisation
+Image Type
+Image Unique ID
+Image Width
+Interoperability Index
+Interoperability Version
+Iso
+JPEG Comment
+JPEG Quality
+Layer State Information
+Layers Group Information
+Lens
+Lens Data
+Lens Distortion Parameters
+Lens Information
+Lens Model
+Lens Specification
+Lens Stops
+Lens Type
+Linearization Table
+Long Exposure Noise Reduction
+Long Focal Length
+Luminance
+Macro
+Macro Focus
+Macro Mode
+Make
+Makernote
+Manual Focus Distance
+Max Aperture Value
+Measured EV
+Measured EV 2
+Measurement
+Media Black Point
+Media White Point
+Metering Mode
+Model
+Multi Exposure
+My Colors
+ND Filter
+NEF Compression
+NEF Thumbnail Size
+Noise Reduction
+Number of Components
+Object Name
+Optical Zoom Code
+Orientation
+Owner Name
+Panorama Direction
+Panorama Frame Number
+Picture Control
+Pixel Aspect Ratio
+Plug-in 1 Data
+Plug-in 2 Data
+Preview IFD
+Primary AF Point 1
+Primary AF Point 2
+Primary Platform
+Print Flags
+Print Flags Information
+Print Scale
+Profile Connection Space
+Profile Date/Time
+Profile Description
+Profile Size
+Program Shift
+Quality
+Quality & File Format
+Quality Mode
+Red Bias
+Red Colorant
+Red TRC
+Related Image Length
+Related Image Width
+Related Sound File
+Release Mode
+Rendering Intent
+Resolution Info
+Resolution Unit
+Resolution Units
+Retouch History
+Saturation
+Scene Assist
+Scene Capture Type
+Scene Mode
+Scene Type
+Seed Number
+Self Timer 2
+Self Timer Delay
+Sensing Method
+Sequence Number
+Serial Number
+Sharpening
+Sharpness
+Sharpness Factor
+Shooting Mode
+Short Focal Length
+Shot Info
+Shutter Speed Value
+Signature
+Slices
+Slow Shutter
+Software
+Special Mode
+Sub-Sec Time
+Sub-Sec Time Digitized
+Sub-Sec Time Original
+Subject Distance
+Subject Distance Range
+Super Macro
+Tag Count
+Target Aperture
+Target Exposure Time
+Technology
+Thumbnail Compression
+Thumbnail Data
+Thumbnail Dimensions
+Thumbnail Image Height
+Thumbnail Image Valid Area
+Thumbnail Image Width
+Thumbnail Length
+Thumbnail Offset
+Thumbnail Size
+Time Created
+URL List
+Unknown 10
+Unknown 11
+Unknown 12
+Unknown 20
+Unknown 27
+Unknown 28
+Unknown 31
+Unknown 35
+Unknown 36
+Unknown 37
+Unknown 40
+Unknown 41
+Unknown 42
+Unknown 43
+Unknown 45
+Unknown 48
+Unknown 49
+Unknown Camera Setting 10
+Unknown Camera Setting 12
+Unknown Camera Setting 13
+Unknown Camera Setting 2
+Unknown Camera Setting 3
+Unknown Camera Setting 4
+Unknown Camera Setting 7
+Unknown Camera Setting 8
+Unknown Camera Setting 9
+Unknown tag (0x0000)
+Unknown tag (0x0001)
+Unknown tag (0x0003)
+Unknown tag (0x0005)
+Unknown tag (0x0006)
+Unknown tag (0x0007)
+Unknown tag (0x000a)
+Unknown tag (0x000b)
+Unknown tag (0x000c)
+Unknown tag (0x000e)
+Unknown tag (0x000f)
+Unknown tag (0x0010)
+Unknown tag (0x0012)
+Unknown tag (0x0013)
+Unknown tag (0x0015)
+Unknown tag (0x0016)
+Unknown tag (0x0017)
+Unknown tag (0x0018)
+Unknown tag (0x0019)
+Unknown tag (0x001a)
+Unknown tag (0x001b)
+Unknown tag (0x001c)
+Unknown tag (0x001e)
+Unknown tag (0x001f)
+Unknown tag (0x0022)
+Unknown tag (0x0023)
+Unknown tag (0x0024)
+Unknown tag (0x0025)
+Unknown tag (0x0026)
+Unknown tag (0x0027)
+Unknown tag (0x0029)
+Unknown tag (0x002d)
+Unknown tag (0x002e)
+Unknown tag (0x0032)
+Unknown tag (0x0035)
+Unknown tag (0x0041)
+Unknown tag (0x005e)
+Unknown tag (0x005f)
+Unknown tag (0x0060)
+Unknown tag (0x0061)
+Unknown tag (0x0100)
+Unknown tag (0x0101)
+Unknown tag (0x0102)
+Unknown tag (0x0103)
+Unknown tag (0x0106)
+Unknown tag (0x010f)
+Unknown tag (0x0110)
+Unknown tag (0x0115)
+Unknown tag (0x011c)
+Unknown tag (0x0132)
+Unknown tag (0x03fe)
+Unknown tag (0x042d)
+Unknown tag (0x0430)
+Unknown tag (0x043a)
+Unknown tag (0x043b)
+Unknown tag (0x1001)
+Unknown tag (0x1002)
+Unknown tag (0x1005)
+Unknown tag (0x1009)
+Unknown tag (0x1010)
+Unknown tag (0x1013)
+Unknown tag (0x1014)
+Unknown tag (0x1016)
+Unknown tag (0x101b)
+Unknown tag (0x101c)
+Unknown tag (0x101d)
+Unknown tag (0x101e)
+Unknown tag (0x101f)
+Unknown tag (0x1020)
+Unknown tag (0x1021)
+Unknown tag (0x1022)
+Unknown tag (0x1024)
+Unknown tag (0x1025)
+Unknown tag (0x1026)
+Unknown tag (0x1027)
+Unknown tag (0x1028)
+Unknown tag (0x1030)
+Unknown tag (0x1031)
+Unknown tag (0x1033)
+Unknown tag (0x1038)
+Unknown tag (0x103d)
+Unknown tag (0x103e)
+Unknown tag (0x1f40)
+Unknown tag (0x2000)
+Unknown tag (0x8830)
+Unknown tag (0x9001)
+Unknown tag (0x9002)
+Unknown tag (0x9003)
+Unknown tag (0x9004)
+Unknown tag (0x9005)
+Unknown tag (0x9006)
+Unknown tag (0x9007)
+Unknown tag (0x9008)
+Unknown tag (0xa000)
+Unknown tag (0xa001)
+Unknown tag (0xa002)
+Unknown tag (0xa100)
+Unknown tag (0xa101)
+Unknown tag (0xa200)
+Unknown tag (0xa300)
+Unknown tag (0xa301)
+Unknown tag (0xa400)
+Unknown tag (0xa401)
+Unknown tag (0xa402)
+Unknown tag (0xa403)
+Unknown tag (0xa404)
+Unknown tag (0xa405)
+Unknown tag (0xa406)
+Unknown tag (0xa407)
+Unknown tag (0xa408)
+Unknown tag (0xa409)
+Unknown tag (0xa40a)
+Unknown tag (0xa40c)
+Unknown tag (0xb045)
+Unknown tag (0xb046)
+Unknown tag (0xb04c)
+Unknown tag (0xb04d)
+Unknown tag (0xc100)
+Unknown tag (0xc121)
+Unknown tag (0xc122)
+Unknown tag (0xc123)
+Unknown tag (0xc124)
+Unknown tag (0xc125)
+Unknown tag (0xc126)
+Unknown tag (0xc127)
+Unknown tag (0xc128)
+Unknown tag (0xc129)
+Unknown tag (0xc12a)
+Unknown tag (0xc12b)
+Unknown tag (0xc12c)
+Unknown tag (0xc12d)
+Unknown tag (0xc12e)
+Unknown tag (0xc12f)
+Unknown tag (0xc200)
+Unknown tag (0xc201)
+Unknown tag (0xc202)
+Unknown tag (0xc203)
+Unknown tag (0xc400)
+Unknown tag (0xc40b)
+Unknown tag (0xc419)
+Unknown tag (0xc41e)
+Unknown tag (0xc41f)
+Unknown tag (0xc420)
+Unknown tag (0xc4a5)
+Unknown tag (0xc500)
+Unknown tag (0xc501)
+Unknown tag (0xc503)
+Unknown tag (0xc504)
+Unknown tag (0xd20d)
+Unknown tag (0xd20e)
+Unknown tag (0xd20f)
+Unknown tag (0xd210)
+Unknown tag (0xd211)
+Unknown tag (0xd212)
+Unknown tag (0xd213)
+Unknown tag (0xd214)
+Unknown tag (0xd215)
+Unknown tag (0xd216)
+Unknown tag (0xd217)
+Unknown tag (0xd218)
+Unknown tag (0xd219)
+Unknown tag (0xd21a)
+Unknown tag (0xd21b)
+Unknown tag (0xea1c)
+Unknown tag (0xea1d)
+Unknown tag (0xf000)
+Unknown tag (0xf001)
+Urgency
+User Comment
+VR Info
+VRD Offset
+Valid AF Point Count
+Valid Bits
+Version
+Version Info
+Viewing Conditions
+Viewing Conditions Description
+White Balance
+White Balance Fine
+White Balance Mode
+White Balance RB Coefficients
+Windows XP Comment
+World Time
+X Resolution
+XYZ values
+Y Resolution
+YCbCr Positioning
+Zoom
